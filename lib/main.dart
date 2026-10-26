@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/supabase_config.dart';
 
 import 'providers/study_provider.dart';
+import 'providers/note_provider.dart';
 
 import 'repositories/study_material_repository.dart';
 import 'repositories/saved_reference_repository.dart';
@@ -15,6 +16,7 @@ import 'services/saved_reference_service.dart';
 import 'screens/home_page.dart';
 import 'screens/explore_page.dart';
 import 'screens/saved_page.dart';
+import 'screens/notes_page.dart';
 import 'screens/profile_page.dart';
 
 Future<void> main() async {
@@ -42,6 +44,7 @@ Future<void> main() async {
           create: (_) =>
               StudyProvider(studyRepository, savedReferenceRepository),
         ),
+        ChangeNotifierProvider<NoteProvider>(create: (_) => NoteProvider()),
       ],
       child: const StudyMateApp(),
     ),
@@ -80,6 +83,7 @@ class _MainNavigationState extends State<MainNavigation> {
     HomePage(),
     ExplorePage(),
     SavedPage(),
+    NotesPage(),
     ProfilePage(),
   ];
 
@@ -109,6 +113,11 @@ class _MainNavigationState extends State<MainNavigation> {
             icon: Icon(Icons.favorite_border),
             selectedIcon: Icon(Icons.favorite),
             label: 'Saved',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.note_alt_outlined),
+            selectedIcon: Icon(Icons.note_alt),
+            label: 'Notes',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
