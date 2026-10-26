@@ -1,17 +1,67 @@
-# studymate
+# StudyMate
 
-A new Flutter project.
+StudyMate adalah aplikasi mobile berbasis Flutter yang dirancang sebagai teman belajar untuk membantu pengguna menemukan referensi pembelajaran, menyimpan referensi, dan mengelola catatan belajar secara terstruktur.
 
-## Getting Started
+## Fitur Utama
 
-This project is a starting point for a Flutter application.
+### 1. Home
+Halaman utama yang menampilkan ringkasan aktivitas belajar pengguna, statistik referensi tersimpan dan catatan, kategori pembelajaran, serta rekomendasi referensi.
 
-A few resources to get you started if this is your first Flutter project:
+### 2. Explore
+Pengguna dapat mencari materi atau referensi pembelajaran menggunakan Open Library API.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Fitur yang tersedia:
+- Pencarian referensi
+- Menampilkan judul buku
+- Menampilkan penulis
+- Menampilkan tahun terbit
+- Menampilkan cover buku
+- Melihat detail referensi
+- Menyimpan referensi
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 3. Saved
+Halaman untuk melihat referensi pembelajaran yang telah disimpan oleh pengguna.
+
+Data referensi tersimpan menggunakan Supabase sehingga data dapat dikelola melalui backend.
+
+### 4. Notes
+Pengguna dapat membuat dan mengelola catatan belajar.
+
+Fitur Notes meliputi:
+- Menambahkan catatan
+- Mengedit catatan
+- Menghapus catatan
+- Menentukan kategori catatan
+- Menentukan prioritas catatan
+- Menyimpan data catatan ke Supabase
+
+### 5. Profile
+Halaman profil yang menampilkan informasi pengguna, jumlah referensi yang disimpan, jumlah catatan, informasi profil, dan informasi mengenai aplikasi StudyMate.
+
+---
+
+## Teknologi yang Digunakan
+
+- **Flutter** — framework untuk pengembangan aplikasi mobile
+- **Dart** — bahasa pemrograman
+- **Provider** — state management
+- **Supabase** — backend dan database
+- **Open Library API** — sumber data referensi buku
+- **HTTP** — komunikasi dengan Open Library API
+
+---
+
+## Arsitektur Aplikasi
+
+StudyMate menggunakan arsitektur berlapis untuk memisahkan tanggung jawab setiap bagian aplikasi.
+
+```text
+UI / Screens
+     ↓
+Provider
+     ↓
+Repository
+     ↓
+Service
+     ↓
+External API / Supabase

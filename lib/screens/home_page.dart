@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/study_provider.dart';
+import '../providers/note_provider.dart';
+import 'explore_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -49,6 +54,10 @@ class HomePage extends StatelessWidget {
                     children: [
                       _buildHeader(context),
 
+                      const SizedBox(height: 24),
+
+                      _buildStatistics(context, isWide),
+
                       const SizedBox(height: 28),
 
                       _buildSearchBar(context),
@@ -62,7 +71,7 @@ class HomePage extends StatelessWidget {
 
                       const SizedBox(height: 16),
 
-                      _buildCategories(isWide),
+                      _buildCategories(context, isWide),
 
                       const SizedBox(height: 32),
 
@@ -73,7 +82,7 @@ class HomePage extends StatelessWidget {
 
                       const SizedBox(height: 16),
 
-                      _buildRecommendations(isWide),
+                      _buildRecommendations(context, isWide),
                     ],
                   ),
                 ),
@@ -123,11 +132,51 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  Widget _buildStatistics(BuildContext context, bool isWide) {
+    return Row(
+      children: [
+        Expanded(
+          child: _StatCard(
+            icon: Icons.favorite_outline,
+            title: 'Saved',
+            value: context
+                .watch<StudyProvider>()
+                .savedMaterials
+                .length
+                .toString(),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _StatCard(
+            icon: Icons.note_alt_outlined,
+            title: 'Notes',
+            value: context.watch<NoteProvider>().notes.length.toString(),
+          ),
+        ),
+        if (isWide) ...[
+          const SizedBox(width: 12),
+          Expanded(
+            child: _StatCard(
+              icon: Icons.explore_outlined,
+              title: 'Explore',
+              value: '20+',
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   Widget _buildSearchBar(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
-        // Nanti diarahkan ke Explore.
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ExplorePage()),
+        );
       },
+      borderRadius: BorderRadius.circular(18),
       child: Container(
         height: 56,
         padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -140,9 +189,16 @@ class HomePage extends StatelessWidget {
           children: [
             Icon(Icons.search, color: Colors.grey.shade500),
             const SizedBox(width: 12),
-            Text(
-              'Search learning references...',
-              style: TextStyle(color: Colors.grey.shade500, fontSize: 15),
+            Expanded(
+              child: Text(
+                'Search learning references...',
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 15),
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 15,
+              color: Colors.grey.shade500,
             ),
           ],
         ),
@@ -167,7 +223,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildCategories(bool isWide) {
+  Widget _buildCategories(BuildContext context, bool isWide) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -191,7 +247,10 @@ class HomePage extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(18),
             onTap: () {
-              // Nanti kategori akan mengarah ke Explore.
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ExplorePage()),
+              );
             },
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -205,14 +264,14 @@ class HomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      category['icon'],
+                      category['icon'] as IconData,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      category['title'],
+                      category['title'] as String,
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -225,7 +284,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendations(bool isWide) {
+  Widget _buildRecommendations(BuildContext context, bool isWide) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -249,7 +308,10 @@ class HomePage extends StatelessWidget {
           ),
           child: InkWell(
             onTap: () {
-              // Nanti diarahkan ke detail material.
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ExplorePage()),
+              );
             },
             child: Padding(
               padding: const EdgeInsets.all(18),
@@ -263,7 +325,7 @@ class HomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      item['icon'],
+                      item['icon'] as IconData,
                       size: 32,
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -275,7 +337,7 @@ class HomePage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item['title'],
+                          item['title'] as String,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -285,7 +347,7 @@ class HomePage extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          item['author'],
+                          item['author'] as String,
                           style: TextStyle(
                             color: Colors.grey.shade600,
                             fontSize: 13,
@@ -318,6 +380,45 @@ class HomePage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String value;
+
+  const _StatCard({
+    required this.icon,
+    required this.title,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
+      elevation: 0,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        child: Column(
+          children: [
+            Icon(icon, size: 28, color: colorScheme.primary),
+            const SizedBox(height: 6),
+            Text(
+              value,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              title,
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
