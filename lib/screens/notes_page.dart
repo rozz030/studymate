@@ -28,9 +28,7 @@ class NotesPage extends StatelessWidget {
               return _NoteCard(
                 note: note,
                 onEdit: () => _showEditNoteForm(context, note),
-                onDelete: () {
-                  noteProvider.deleteNote(note);
-                },
+                onDelete: () => _confirmDelete(context, note),
               );
             },
           );
@@ -61,6 +59,52 @@ class NotesPage extends StatelessWidget {
       builder: (context) {
         return _NoteForm(note: note, isEditing: true);
       },
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, StudyNote note) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Hapus Catatan?'),
+          content: Text(
+            'Apakah kamu yakin ingin menghapus '
+            '"${note.title}"?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(false);
+              },
+              child: const Text('Batal'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(true);
+              },
+              child: const Text('Hapus'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldDelete != true || !context.mounted) {
+      return;
+    }
+
+    await context.read<NoteProvider>().deleteNote(note);
+
+    if (!context.mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Catatan berhasil dihapus'),
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 }
@@ -271,7 +315,6 @@ class _NoteFormState extends State<_NoteForm> {
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
-
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(
@@ -284,12 +327,11 @@ class _NoteFormState extends State<_NoteForm> {
                   if (value == null || value.trim().isEmpty) {
                     return 'Judul wajib diisi';
                   }
+
                   return null;
                 },
               ),
-
               const SizedBox(height: 16),
-
               TextFormField(
                 controller: _contentController,
                 maxLines: 5,
@@ -304,12 +346,11 @@ class _NoteFormState extends State<_NoteForm> {
                   if (value == null || value.trim().isEmpty) {
                     return 'Isi catatan wajib diisi';
                   }
+
                   return null;
                 },
               ),
-
               const SizedBox(height: 16),
-
               DropdownButtonFormField<String>(
                 initialValue: _category,
                 decoration: const InputDecoration(
@@ -331,9 +372,7 @@ class _NoteFormState extends State<_NoteForm> {
                   }
                 },
               ),
-
               const SizedBox(height: 16),
-
               DropdownButtonFormField<String>(
                 initialValue: _priority,
                 decoration: const InputDecoration(
@@ -355,9 +394,7 @@ class _NoteFormState extends State<_NoteForm> {
                   }
                 },
               ),
-
               const SizedBox(height: 20),
-
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
