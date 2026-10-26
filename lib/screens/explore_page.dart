@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../models/study_material.dart';
 import '../providers/study_provider.dart';
-
 import 'study_detail_page.dart';
 
 class ExplorePage extends StatefulWidget {
@@ -23,7 +22,18 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 
   void _search() {
-    context.read<StudyProvider>().searchMaterials(_searchController.text);
+    final query = _searchController.text.trim();
+
+    if (query.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Masukkan kata kunci pencarian terlebih dahulu.'),
+        ),
+      );
+      return;
+    }
+
+    context.read<StudyProvider>().searchMaterials(query);
   }
 
   @override
@@ -242,25 +252,46 @@ class _ExplorePageState extends State<ExplorePage> {
           style: TextStyle(color: Colors.grey.shade600),
         ),
         const SizedBox(height: 20),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: materials.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: isWide ? 3 : 1,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: isWide ? 1.45 : 2.7,
+
+        // Compact layout
+        if (!isWide)
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: materials.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              return _MaterialListCard(material: materials[index]);
+            },
+          )
+        // Wide / Expanded layout
+        else
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: materials.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 0.85,
+            ),
+            itemBuilder: (context, index) {
+              return _MaterialGridCard(material: materials[index]);
+            },
           ),
-          itemBuilder: (context, index) {
-            return _buildMaterialCard(materials[index]);
-          },
-        ),
       ],
     );
   }
+}
 
-  Widget _buildMaterialCard(StudyMaterial material) {
+class _MaterialListCard extends StatelessWidget {
+  final StudyMaterial material;
+
+  const _MaterialListCard({required this.material});
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       elevation: 0,
       margin: EdgeInsets.zero,
@@ -270,72 +301,103 @@ class _ExplorePageState extends State<ExplorePage> {
         side: BorderSide(color: Colors.grey.shade200),
       ),
       child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => StudyDetailPage(material: material),
-            ),
-          );
-        },
+        onTap: () => _openDetail(context),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildCover(material),
-
+              _CoverImage(material: material, width: 70, height: 100),
               const SizedBox(width: 14),
+              Expanded(child: _MaterialInformation(material: material)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      material.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      material.author,
+  void _openDetail(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StudyDetailPage(material: material),
+      ),
+    );
+  }
+}
+
+class _MaterialGridCard extends StatelessWidget {
+  final StudyMaterial material;
+
+  const _MaterialGridCard({required this.material});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: Colors.grey.shade200),
+      ),
+      child: InkWell(
+        onTap: () => _openDetail(context),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: _CoverImage(material: material, width: 110, height: 145),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                material.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                material.author,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  Icon(
+                    Icons.menu_book_outlined,
+                    size: 16,
+                    color: Colors.grey.shade500,
+                  ),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      material.source,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.grey.shade600),
-                    ),
-                    const SizedBox(height: 8),
-                    if (material.publishYear != null)
-                      Text(
-                        'Published ${material.publishYear}',
-                        style: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 12,
-                        ),
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 12,
                       ),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.menu_book_outlined,
-                          size: 16,
-                          color: Colors.grey.shade500,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          material.source,
-                          style: TextStyle(
-                            color: Colors.grey.shade500,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  if (material.publishYear != null)
+                    Text(
+                      '${material.publishYear}',
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 12,
+                      ),
+                    ),
+                ],
               ),
             ],
           ),
@@ -344,44 +406,110 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Widget _buildCover(StudyMaterial material) {
+  void _openDetail(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StudyDetailPage(material: material),
+      ),
+    );
+  }
+}
+
+class _MaterialInformation extends StatelessWidget {
+  final StudyMaterial material;
+
+  const _MaterialInformation({required this.material});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          material.title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          material.author,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(color: Colors.grey.shade600),
+        ),
+        const SizedBox(height: 8),
+        if (material.publishYear != null)
+          Text(
+            'Published ${material.publishYear}',
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+          ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Icon(
+              Icons.menu_book_outlined,
+              size: 16,
+              color: Colors.grey.shade500,
+            ),
+            const SizedBox(width: 5),
+            Expanded(
+              child: Text(
+                material.source,
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _CoverImage extends StatelessWidget {
+  final StudyMaterial material;
+  final double width;
+  final double height;
+
+  const _CoverImage({
+    required this.material,
+    required this.width,
+    required this.height,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     if (material.coverUrl == null) {
-      return Container(
-        width: 70,
-        height: 100,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(
-          Icons.menu_book_outlined,
-          size: 32,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      );
+      return _placeholder(context);
     }
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Image.network(
         material.coverUrl!,
-        width: 70,
-        height: 100,
+        width: width,
+        height: height,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return Container(
-            width: 70,
-            height: 100,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              Icons.broken_image_outlined,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          return _placeholder(context);
         },
+      ),
+    );
+  }
+
+  Widget _placeholder(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(
+        Icons.menu_book_outlined,
+        size: 32,
+        color: Theme.of(context).colorScheme.primary,
       ),
     );
   }
