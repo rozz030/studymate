@@ -16,7 +16,7 @@ class NotesPage extends StatelessWidget {
           final notes = noteProvider.notes;
 
           if (notes.isEmpty) {
-            return _EmptyNotesState(onAdd: () => _showNoteForm(context));
+            return _EmptyNotesState(onAdd: () => _showAddNoteForm(context));
           }
 
           return ListView.builder(
@@ -27,6 +27,7 @@ class NotesPage extends StatelessWidget {
 
               return _NoteCard(
                 note: note,
+                onEdit: () => _showEditNoteForm(context, note),
                 onDelete: () {
                   noteProvider.deleteNote(note);
                 },
@@ -36,19 +37,29 @@ class NotesPage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showNoteForm(context),
+        onPressed: () => _showAddNoteForm(context),
         icon: const Icon(Icons.add),
         label: const Text('Tambah Catatan'),
       ),
     );
   }
 
-  void _showNoteForm(BuildContext context) {
+  void _showAddNoteForm(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return const _AddNoteForm();
+        return const _NoteForm(isEditing: false);
+      },
+    );
+  }
+
+  void _showEditNoteForm(BuildContext context, StudyNote note) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return _NoteForm(note: note, isEditing: true);
       },
     );
   }
@@ -95,9 +106,14 @@ class _EmptyNotesState extends StatelessWidget {
 
 class _NoteCard extends StatelessWidget {
   final StudyNote note;
+  final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const _NoteCard({required this.note, required this.onDelete});
+  const _NoteCard({
+    required this.note,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +137,11 @@ class _NoteCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                ),
+                IconButton(
+                  onPressed: onEdit,
+                  icon: const Icon(Icons.edit_outlined),
+                  tooltip: 'Edit catatan',
                 ),
                 IconButton(
                   onPressed: onDelete,
@@ -157,18 +178,21 @@ class _NoteCard extends StatelessWidget {
   }
 }
 
-class _AddNoteForm extends StatefulWidget {
-  const _AddNoteForm();
+class _NoteForm extends StatefulWidget {
+  final StudyNote? note;
+  final bool isEditing;
+
+  const _NoteForm({this.note, required this.isEditing});
 
   @override
-  State<_AddNoteForm> createState() => _AddNoteFormState();
+  State<_NoteForm> createState() => _NoteFormState();
 }
 
-class _AddNoteFormState extends State<_AddNoteForm> {
+class _NoteFormState extends State<_NoteForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final _titleController = TextEditingController();
-  final _contentController = TextEditingController();
+  late final TextEditingController _titleController;
+  late final TextEditingController _contentController;
 
   String _category = 'Materi';
   String _priority = 'Medium';
@@ -176,6 +200,20 @@ class _AddNoteFormState extends State<_AddNoteForm> {
   final List<String> _categories = ['Materi', 'Tugas', 'Rangkuman', 'Ide'];
 
   final List<String> _priorities = ['Low', 'Medium', 'High'];
+
+  @override
+  void initState() {
+    super.initState();
+
+    final note = widget.note;
+
+    _titleController = TextEditingController(text: note?.title ?? '');
+
+    _contentController = TextEditingController(text: note?.content ?? '');
+
+    _category = note?.category ?? 'Materi';
+    _priority = note?.priority ?? 'Medium';
+  }
 
   @override
   void dispose() {
@@ -189,12 +227,24 @@ class _AddNoteFormState extends State<_AddNoteForm> {
       return;
     }
 
-    context.read<NoteProvider>().addNote(
-      title: _titleController.text.trim(),
-      content: _contentController.text.trim(),
-      category: _category,
-      priority: _priority,
-    );
+    final provider = context.read<NoteProvider>();
+
+    if (widget.isEditing && widget.note != null) {
+      provider.updateNote(
+        note: widget.note!,
+        title: _titleController.text.trim(),
+        content: _contentController.text.trim(),
+        category: _category,
+        priority: _priority,
+      );
+    } else {
+      provider.addNote(
+        title: _titleController.text.trim(),
+        content: _contentController.text.trim(),
+        category: _category,
+        priority: _priority,
+      );
+    }
 
     Navigator.of(context).pop();
   }
@@ -216,7 +266,7 @@ class _AddNoteFormState extends State<_AddNoteForm> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Tambah Catatan',
+                widget.isEditing ? 'Edit Catatan' : 'Tambah Catatan',
                 style: Theme.of(context).textTheme.headlineSmall
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
@@ -268,7 +318,7 @@ class _AddNoteFormState extends State<_AddNoteForm> {
                   prefixIcon: Icon(Icons.category_outlined),
                 ),
                 items: _categories.map((category) {
-                  return DropdownMenuItem(
+                  return DropdownMenuItem<String>(
                     value: category,
                     child: Text(category),
                   );
@@ -292,7 +342,7 @@ class _AddNoteFormState extends State<_AddNoteForm> {
                   prefixIcon: Icon(Icons.flag_outlined),
                 ),
                 items: _priorities.map((priority) {
-                  return DropdownMenuItem(
+                  return DropdownMenuItem<String>(
                     value: priority,
                     child: Text(priority),
                   );
@@ -312,8 +362,12 @@ class _AddNoteFormState extends State<_AddNoteForm> {
                 width: double.infinity,
                 child: FilledButton.icon(
                   onPressed: _saveNote,
-                  icon: const Icon(Icons.save_outlined),
-                  label: const Text('Simpan Catatan'),
+                  icon: Icon(
+                    widget.isEditing ? Icons.save_outlined : Icons.add,
+                  ),
+                  label: Text(
+                    widget.isEditing ? 'Simpan Perubahan' : 'Simpan Catatan',
+                  ),
                 ),
               ),
             ],

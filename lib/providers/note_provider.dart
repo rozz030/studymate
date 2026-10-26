@@ -25,6 +25,32 @@ class NoteProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateNote({
+    required StudyNote note,
+    required String title,
+    required String content,
+    required String category,
+    required String priority,
+  }) {
+    final index = _notes.indexOf(note);
+
+    if (index == -1) {
+      return;
+    }
+
+    final updatedNote = StudyNote(
+      id: note.id,
+      title: title,
+      content: content,
+      category: category,
+      priority: priority,
+      createdAt: note.createdAt,
+    );
+
+    _notes[index] = updatedNote;
+    notifyListeners();
+  }
+
   void deleteNote(StudyNote note) {
     _notes.remove(note);
     notifyListeners();
