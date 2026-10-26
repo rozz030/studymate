@@ -9,9 +9,11 @@ import 'providers/note_provider.dart';
 
 import 'repositories/study_material_repository.dart';
 import 'repositories/saved_reference_repository.dart';
+import 'repositories/study_note_repository.dart';
 
 import 'services/open_library_service.dart';
 import 'services/saved_reference_service.dart';
+import 'services/study_note_service.dart';
 
 import 'screens/home_page.dart';
 import 'screens/explore_page.dart';
@@ -37,6 +39,10 @@ Future<void> main() async {
     savedReferenceService,
   );
 
+  final studyNoteService = StudyNoteService(supabase);
+
+  final studyNoteRepository = StudyNoteRepository(studyNoteService);
+
   runApp(
     MultiProvider(
       providers: [
@@ -44,7 +50,10 @@ Future<void> main() async {
           create: (_) =>
               StudyProvider(studyRepository, savedReferenceRepository),
         ),
-        ChangeNotifierProvider<NoteProvider>(create: (_) => NoteProvider()),
+
+        ChangeNotifierProvider<NoteProvider>(
+          create: (_) => NoteProvider(studyNoteRepository)..loadNotes(),
+        ),
       ],
       child: const StudyMateApp(),
     ),
