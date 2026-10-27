@@ -96,6 +96,18 @@ class NotesPage extends StatelessWidget {
       return;
     }
 
+    final error = context.read<NoteProvider>().error;
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Catatan berhasil dihapus'),
