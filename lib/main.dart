@@ -119,8 +119,8 @@ class _MainNavigationState extends State<MainNavigation> {
             label: 'Explore',
           ),
           NavigationDestination(
-            icon: Icon(Icons.favorite_border),
-            selectedIcon: Icon(Icons.favorite),
+            icon: Icon(Icons.bookmark_border_rounded),
+            selectedIcon: Icon(Icons.bookmark_rounded),
             label: 'Saved',
           ),
           NavigationDestination(

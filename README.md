@@ -6,7 +6,7 @@ Project ini dibangun sebagai pemenuhan **Project Ujian Tengah Semester (UTS) Pem
 
 ---
 
-## 👤 Identitas Mahasiswa
+## Identitas Mahasiswa
 
 - **Nama**: Komang Rossi Adi Utama
 - **NIM**: 2415051106
@@ -17,7 +17,7 @@ Project ini dibangun sebagai pemenuhan **Project Ujian Tengah Semester (UTS) Pem
 
 ---
 
-## 🚀 Fitur Utama & Screens
+## Fitur Utama & Screens
 
 Aplikasi memiliki **8 Screen Fungsional** (memenuhi ketentuan minimal 6 screen):
 
@@ -60,7 +60,7 @@ Aplikasi memiliki **8 Screen Fungsional** (memenuhi ketentuan minimal 6 screen):
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Framework**: Flutter (v3.x / Dart v3.x)
 - **UI & Design**: Material Design 3, Responsive LayoutBuilder & MediaQuery
@@ -71,7 +71,7 @@ Aplikasi memiliki **8 Screen Fungsional** (memenuhi ketentuan minimal 6 screen):
 
 ---
 
-## 🌐 REST API yang Digunakan
+## REST API yang Digunakan
 
 - **Penyedia API**: [Open Library API](https://openlibrary.org/)
 - **Endpoint**: `https://openlibrary.org/search.json`
@@ -84,7 +84,7 @@ Aplikasi memiliki **8 Screen Fungsional** (memenuhi ketentuan minimal 6 screen):
 
 ---
 
-## 🗄️ Backend & Database (Supabase)
+## Backend & Database (Supabase)
 
 Backend menggunakan **Supabase PostgreSQL** tanpa menyimpan credential sensitif (`service_role` tidak digunakan, hanya `anon/publishableKey`).
 
@@ -112,7 +112,7 @@ Backend menggunakan **Supabase PostgreSQL** tanpa menyimpan credential sensitif 
 
 ---
 
-## 🏛️ Arsitektur Aplikasi (Layered Architecture)
+## Arsitektur Aplikasi (Layered Architecture)
 
 Aplikasi menerapkan pemisahan tanggung jawab secara ketat (*Separation of Concerns*):
 ```text
@@ -166,7 +166,7 @@ lib/
 
 ---
 
-## 📱 Screenshot Aplikasi
+## Screenshot Aplikasi
 
 | Home / Dashboard | Explore (Katalog) | Detail Referensi |
 |:---:|:---:|:---:|
@@ -182,7 +182,39 @@ lib/
 
 ---
 
-## 💻 Cara Menjalankan Project
+
+---
+
+## Minimum Requirement Checklist (UTS Pemrograman Mobile)
+
+| Komponen | Spesifikasi Minimum | Implementasi pada StudyMate | Status |
+|---|---|---|:---:|
+| **Screen fungsional** | ≥ 6 Screen | 8 Screen fungsional (Home, Explore, Detail, Add Note, Edit Note, Saved, Notes, Profile) | ✅ Terpenuhi |
+| **Dart Model** | ≥ 2 Model | 2 Model data (StudyMaterial, StudyNote) dengan JSON serialization & parsing | ✅ Terpenuhi |
+| **Reusable Widget** | ≥ 3 Widget | 5 Reusable Widget (EmptyStateWidget, ErrorStateWidget, LoadingWidget, SectionHeader, StudyMaterialCard) | ✅ Terpenuhi |
+| **Responsive condition** | ≥ 2 Kondisi | Compact & Wide/Expanded layout (LayoutBuilder, adaptive ListView & 2/4-column GridView) | ✅ Terpenuhi |
+| **REST API** | ≥ 1 REST API | Open Library Search API (https://openlibrary.org/search.json) | ✅ Terpenuhi |
+| **REST GET** | Wajib | Operasi http.get dengan error handling, timeout, dan JSON mapping ke model | ✅ Terpenuhi |
+| **Backend database** | ≥ 1 Database | Supabase (PostgreSQL Cloud Database) | ✅ Terpenuhi |
+| **Tabel database** | ≥ 1 Tabel | 2 Tabel database (study_notes sebagai tabel utama, saved_references sebagai bookmark) | ✅ Terpenuhi |
+| **Field tabel** | ≥ 4 + ID | 5 Field + ID (id, 	itle, content, category, priority, created_at) | ✅ Terpenuhi |
+| **CRUD database** | 4 Operasi | Create (Add Note), Read (List Notes), Update (Edit Note), Delete (Hapus Note) | ✅ Terpenuhi |
+| **State management** | Provider / Ekuivalen | Provider + ChangeNotifier (StudyProvider, NoteProvider, MultiProvider) | ✅ Terpenuhi |
+| **Multi-screen navigation** | Wajib | NavigationBar (5 tabs) + Navigator push/pop multi-level | ✅ Terpenuhi |
+| **Passing data** | Wajib | Passing object model (StudyMaterial ke Detail, StudyNote ke Edit) | ✅ Terpenuhi |
+| **Form + validation** | Wajib | Form validation di Add Note & Edit Note (Title, Content, Dropdown) | ✅ Terpenuhi |
+| **SnackBar / Dialog** | Wajib | SnackBar feedback operasi & AlertDialog konfirmasi hapus catatan | ✅ Terpenuhi |
+| **Loading state** | Wajib | Indikator loading pada pencarian API, database fetch, & form submit | ✅ Terpenuhi |
+| **Error state** | Wajib | Error state widget dengan tombol retry & exception handling terstruktur | ✅ Terpenuhi |
+| **Empty state** | Wajib | Empty state informatif pada hasil pencarian, saved references, & notes | ✅ Terpenuhi |
+| **Meaningful Git commits** | ≥ 16 Commits | 17+ meaningful commits terstruktur mengikuti milestone pengembangan | ✅ Terpenuhi |
+| **Push per milestone** | Wajib | Commit & Push bertahap ke remote GitHub repository | ✅ Terpenuhi |
+| **README** | Wajib | Dokumentasi lengkap memuat seluruh spesifikasi, arsitektur, & panduan | ✅ Terpenuhi |
+| **GitHub URL** | Wajib | Repository publik GitHub aktif | ✅ Terpenuhi |
+
+---
+
+## Cara Menjalankan Project
 
 1. **Clone repository ini**:
    ```bash

@@ -103,9 +103,9 @@ class StudyMaterialCard extends StatelessWidget {
                         if (onSave != null)
                           IconButton(
                             onPressed: onSave,
-                            tooltip: isSaved ? 'Remove from saved' : 'Save',
+                            tooltip: isSaved ? 'Hapus dari tersimpan' : 'Simpan referensi',
                             icon: Icon(
-                              isSaved ? Icons.favorite : Icons.favorite_border,
+                              isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
                               color: isSaved
                                   ? colorScheme.primary
                                   : Colors.grey.shade500,
