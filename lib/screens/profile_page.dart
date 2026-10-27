@@ -32,15 +32,19 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 16),
 
             const Text(
-              'Student',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              'Komang Rossi Adi Utama',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 4),
 
             Text(
-              'StudyMate User',
-              style: TextStyle(color: Colors.grey.shade600),
+              'NIM: 2415051106 • Kelas PTI 5A',
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
             ),
 
             const SizedBox(height: 28),
@@ -145,13 +149,25 @@ class ProfilePage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Nama', style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 4),
-              Text('Student'),
-              SizedBox(height: 16),
-              Text('Status', style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 4),
-              Text('Pengguna StudyMate'),
+              Text('Nama Lengkap', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 2),
+              Text('Komang Rossi Adi Utama'),
+              SizedBox(height: 12),
+              Text('NIM', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 2),
+              Text('2415051106'),
+              SizedBox(height: 12),
+              Text('Kelas / Prodi', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 2),
+              Text('PTI 5A - Pendidikan Teknik Informatika'),
+              SizedBox(height: 12),
+              Text('Dosen Pengampu', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 2),
+              Text('Dr. Ir. I Ketut Resika Arthana, S.T., M.Kom'),
+              SizedBox(height: 12),
+              Text('Teaching Assistant', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 2),
+              Text('Made Yuda Sadewa, S.Pd.'),
             ],
           ),
           actions: [

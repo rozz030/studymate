@@ -5,6 +5,8 @@ import '../providers/note_provider.dart';
 import '../providers/study_provider.dart';
 import '../widgets/section_header.dart';
 import 'explore_page.dart';
+import 'saved_page.dart';
+import 'notes_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -89,7 +91,7 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Good day, Student 👋',
+                'Good day, Rossi 👋',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.6,
@@ -258,13 +260,23 @@ class HomePage extends StatelessWidget {
         title: 'Saved',
         subtitle: 'Your references',
         icon: Icons.bookmark_rounded,
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SavedPage()),
+          );
+        },
       ),
       _QuickAction(
         title: 'Notes',
         subtitle: 'Study notes',
         icon: Icons.edit_note_rounded,
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const NotesPage()),
+          );
+        },
       ),
     ];
 
